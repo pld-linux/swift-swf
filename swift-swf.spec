@@ -1,7 +1,7 @@
 Summary:	Open-source alternative to Adobe Flash
 Name:		swift-swf
 Version:	11.10.2
-Release:	0.1
+Release:	0.2
 License:	GPL v3+
 Group:		Applications/Multimedia
 Source0:	https://launchpad.net/~skykooler/+archive/swift-swf/+files/%{name}_%{version}.tar.gz
@@ -10,6 +10,7 @@ URL:		http://swift-swf.blogspot.com/
 BuildRequires:	pkgconfig
 BuildRequires:	python-devel >= 1:2.7.1
 BuildRequires:	python-distutils-extra >=2.18
+BuildRequires:	python-launchpad-integration
 BuildRequires:	rpm-pythonprov
 BuildRequires:	rpmbuild(macros) >= 1.586
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -37,6 +38,7 @@ OVERRIDE_LDFLAGS="%{rpmldflags}" \
 
 %install
 rm -rf $RPM_BUILD_ROOT
+cd trunk
 
 %{__python} setup.py install \
 	--root=$RPM_BUILD_ROOT \
@@ -46,30 +48,6 @@ rm -rf $RPM_BUILD_ROOT
 %py_comp $RPM_BUILD_ROOT%{_libdir}/%{name}
 %py_postclean %{_libdir}/%{name}
 
-# move manpages and locales to proper place
-#mv $RPM_BUILD_ROOT%{_datadir}/%{name}/man $RPM_BUILD_ROOT%{_mandir}
-#mv $RPM_BUILD_ROOT%{_datadir}/%{name}/localization/locales $RPM_BUILD_ROOT%{_datadir}/locale
-
-# set proper filenames for locales (TODO: switch to patch if possible)
-#for file in $RPM_BUILD_ROOT%{_datadir}/locale/*; do
-#	lang=$(echo $file|%{__sed} 's:.*locale/\(.*\).*:\1:')
-#	mkdir $RPM_BUILD_ROOT%{_datadir}/locale/$lang/LC_MESSAGES
-#	mv $RPM_BUILD_ROOT%{_datadir}/locale/$lang/*.mo \
-#	$RPM_BUILD_ROOT%{_datadir}/locale/$lang/LC_MESSAGES
-#done;
-#for file in $RPM_BUILD_ROOT%{_datadir}/locale/*/LC_MESSAGES/messages.mo; do
-#	lang=$(echo $file|%{__sed} 's:.*locale/\(.*\)/LC_MESSAGES.*:\1:')
-#	mv $RPM_BUILD_ROOT%{_datadir}/locale/$lang/LC_MESSAGES/messages.mo \
-#	$RPM_BUILD_ROOT%{_datadir}/locale/$lang/LC_MESSAGES/%{name}.mo
-#done;
-#for file in $RPM_BUILD_ROOT%{_datadir}/locale/*/LC_MESSAGES/iso639.mo; do
-#	lang=$(echo $file|%{__sed} 's:.*locale/\(.*\)/LC_MESSAGES.*:\1:')
-#	mv $RPM_BUILD_ROOT%{_datadir}/locale/$lang/LC_MESSAGES/iso639.mo \
-#	$RPM_BUILD_ROOT%{_datadir}/locale/$lang/LC_MESSAGES/%{name}_iso639.mo
-#done;
-#
-#%{__rm} $RPM_BUILD_ROOT%{_bindir}/%{name}-uninstall
-
 %find_lang %{name} --all-name
 
 %clean
@@ -77,7 +55,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -f %{name}.lang
 %defattr(644,root,root,755)
-#%doc Changelog.yaml COPYRIGHT README
+%doc AUTHORS
 #%attr(755,root,root) %{_bindir}/%{name}
 #%{_datadir}/%{name}
 #%{_libdir}/%{name}
